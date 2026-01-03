@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema
 
-var producto = new Schema ({
+const product = new Schema ({
     article: String,
     description: String,
     url_img: String,
@@ -11,4 +11,4 @@ var producto = new Schema ({
 },
 { versionKey: false}
 );
-module.exports = mongoose.model("Productos", producto);
+module.exports = mongoose.model("Products", product);

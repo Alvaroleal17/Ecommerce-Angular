@@ -1,9 +1,10 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
-var cors = require("cors");
-var dotenv = require("dotenv").config();
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 
 //Configuraciones
@@ -23,59 +24,105 @@ mongoose
     console.log(err);
   });
 //Modelos
-var Prod = require("./models/productos");
-var Comp = require("./models/compras")
+const Product = require("./models/products");
+const Purchase = require("./models/purchases")
+const User = require("./models/users")
 
-//Obtener los productos en el HOME
-app.get("/productos", async function(req,res){
-  var p = await Prod.find();
-  res.send(p);
+/* -------------------- Users ---------------------------- */
+
+app.get("/users", async function(req, res){
+  const users = User.find();
+  res.status(200).send(users);
+});
+ 
+//Register
+app.post("/register", async (req, res) => {
+  const { name, email, password, role} = req.body;
+
+  const data = {
+    name: name,
+    email: email,
+    password: password,
+    role: role,
+    date: new Date(),
+  };
+  const user = new User(data);
+  await user.save();
+  const token = jwt.sign({ _id: user._id }, "secretKey");
+  res.status(200).json({ token });
 });
 
-//Obtener los detalles de cada producto en la ruta (detail)
-app.get("/producto/:id", async function (req, res) {
-  var id = req.params.id;
-  var producto_seleccionado = await Prod.findById({_id: id});
-  res.send(producto_seleccionado);
+//Login
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(401).send("This email doesn't exist");
+  if (user.password !== password)
+    return res.status(401).send("Incorrect password");
+
+  const token = jwt.sign({ _id: user._id }, "secretKey");
+  return res.status(200).json({ token });
 });
 
-//Ruta comprar producto
-app.post("/insertar_compra", async function (req, res) {
-  var { id_product, amount, unit_price, name_product } = req.body;
+app.get("/role/:email", async function (req, res) {
+  const email = req.params.email;
+  const user = await User.findOne({ correo: email });
+  res.send({ role: user.role });
+});
+
+
+/* -------------------- Products ---------------------------- */
+
+
+//Get Products
+app.get("/products", async function(req,res){
+  const product = await Product.find();
+  res.send(product);
+});
+
+//Products details
+app.get("/product/:id", async function (req, res) {
+  const id = req.params.id;
+  const selected_product = await Product.findById({_id: id});
+  res.send(selected_product);
+});
+
+//Insert the products in the shopping cart
+app.post("/insert_purchase", async function (req, res) {
+  const { id_product, amount, unit_price, name_product } = req.body;
   
-  var c = {
+  const purchase = {
     id_product: id_product,
     name_product: name_product,
     unit_price: parseInt(unit_price),
     amount: parseInt(amount),
     total: parseInt(unit_price) * parseInt(amount),
-    date: new Date().toISOString().replace(/T/, " ").replace(/\..+/, ""), //fecha actual en formato yyyy-mm-dd hh:ii:ss
+    date: new Date(),
   };
-  console.log(c)
-  var cesta = new Comp(c);
-  await cesta.save();
-  res.send({mensaje: "Añadido al carrito"});
+  const shopping_cart = new Purchase(purchase);
+  await shopping_cart.save();
+  res.send({msg: "Added to shopping cart"});
 });
 
-//Mostrar los documentos de la BD Compras en la tabla de la cesta
-app.get("/cesta", async function (req, res) {
-  var c = await Comp.find();
-  res.send(c)
+//Show the shopping basket
+app.get("/shop_basket", async function (req, res) {
+  const shopping_cart = await Purchase.find();
+  res.send(shopping_cart)
 });
 
-//Eliminiar Producto
-app.delete("/eliminar/:id_producto", async function (req, res) {
-  var id = req.params.id_producto;
-  await Comp.findByIdAndRemove(id);
-  res.send({mensaje: "Eliminado Correctamente"});
+//Delete Product
+app.delete("/delete_product/:id_producto", async function (req, res) {
+  const id = req.params.id_producto;
+  await Purchase.findByIdAndRemove(id);
+  res.send({msg: "Removed successfully"});
 });
 
 
-//Mostrar los producto según la categoria seleccionada en el nabvar
-app.get("/categoria/:cat", async function (req, res) {
-  var cate = req.params.cat;
-  var prods = await Prod.find({ category: cate });
-  res.send(prods)
+//Show the selected category
+app.get("/category/:cat", async function (req, res) {
+  const category = req.params.cat;
+  const products = await Product.find({ category: category });
+  res.send(products)
 });
 
 //Listen

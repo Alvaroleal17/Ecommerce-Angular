@@ -1,13 +1,11 @@
-<h1 class="mb-3 pt-5 text-center">Product List</h1>
+<h1 class="mb-3 mt-5 pt-5 text-center">Product List</h1>
 <br />
 <div class="container">
   <div class="row">
-    <div class="col col-4 mb-5" *ngFor="let p of productServ.documentos">
+    <div class="col-4 mb-5" *ngFor="let p of productServ.documentos">
       <div class="card card-move m-2 item">
         <img
-          src="../../../assets/img/{{ p.url_img }}"
-          class="card-img-top img-fluid"
-          alt="Responsive image"
+          [src]="p.url_img" class="card-img-top img-fluid" alt="Responsive image"
         />
         <div class="card-body">
           <span class="badge bg-warning text-dark mb-3">{{ p.category }}</span>

@@ -1,5 +1,5 @@
-export interface Compra_modelo{
-    id_producto: string, //corresponde con el ID del producto (colección Productos)
+export interface Purchase_model{
+    id_producto: string, 
     name_product: string,
     unit_price: number,
     amount: number,

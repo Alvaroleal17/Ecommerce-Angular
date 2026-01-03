@@ -13,18 +13,20 @@ export class HomeComponent implements OnInit {
     private ruta: ActivatedRoute
   ) {}
 
-  categor = this.ruta.snapshot.params['cat'];
-  ngOnInit(): void {
-    console.log(this.categor);
-    if (this.categor != undefined || this.categor != null) {
-      this.obtenerCategoria();
-    } else {
-      this.listadoProductos();
-    }
-  }
+  category = this.ruta.snapshot.params['cat'];
 
-  listadoProductos() {
-    this.productServ.obtenerProductos().subscribe({
+  ngOnInit(): void {
+    this.ruta.params.subscribe(params => {
+    this.category = params['cat'];
+    if (this.category) {
+      this.getCategory();
+    } else {
+      this.productList();
+    }
+  });
+}
+  productList() {
+    this.productServ.getProducts().subscribe({
       next: (res) => {
         this.productServ.documentos = res;
       },
@@ -32,8 +34,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  obtenerCategoria() {
-    this.productServ.obtenerCategoria(this.categor).subscribe({
+  getCategory() {
+    this.productServ.getCategory(this.category).subscribe({
       next: (res) => {
         this.productServ.documentos = res;
         console.log(res);

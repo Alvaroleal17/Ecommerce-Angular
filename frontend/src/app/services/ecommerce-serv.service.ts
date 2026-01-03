@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Producto_modelo } from '../models/productos';
-import { Compra_modelo } from '../models/compras';
-
+import { Product_model } from '../models/products';
+import { Purchase_model } from '../models/purchases';
+import { Router } from '@angular/router';
+import { Users_model } from '../models/users';
 @Injectable({
   providedIn: 'root'
 })
 export class EcommerceServService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, public route: Router ) { }
 
   URL_API = 'http://localhost:4000';
 
-  documents: Compra_modelo[] = [];
+  documents: Purchase_model[] = [];
 
-  datosCompr: Compra_modelo = {
-    id_producto: "", //corresponde con el ID del producto (colección Productos)
+  datosCompr: Purchase_model = {
+    id_producto: "",
     name_product: "",
     unit_price: 0,
     amount: 1,
@@ -23,9 +24,9 @@ export class EcommerceServService {
     date: "",
   }
 
-  documentos: Producto_modelo[] = [];
+  documentos: Product_model[] = [];
 
-  datosProd: Producto_modelo = {
+  datosProd: Product_model = {
     article: '',
     description: '',
     url_img: '',
@@ -33,50 +34,87 @@ export class EcommerceServService {
     category: '',
     stock: 1,
   }
- 
-  //Productos
-  obtenerProductos(){
-    let peticion  = this.http.get<Producto_modelo[]>(this.URL_API + '/productos')
+  
+  Users: Users_model[] = [];
+
+  datosUser: Users_model = {
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+  }
+  
+  //Products
+  getProducts(){
+    let peticion  = this.http.get<Product_model[]>(this.URL_API + '/products')
     return peticion;
   }
 
-  //Detalle del Producto
-  detalleProducto(id: String) {
-    let peticion = this.http.get<Producto_modelo>(this.URL_API + '/producto/' + id);
+  //Detail product
+  productDetail(id: String) {
+    let peticion = this.http.get<Product_model>(this.URL_API + '/product/' + id);
     return peticion;
   }
   
-  //Compras
-  obtenerCompras() {
-    let peticion = this.http.get<Compra_modelo[]>(this.URL_API + '/cesta');
+  //Purchases
+  getPurchases() {
+    let peticion = this.http.get<Purchase_model[]>(this.URL_API + '/shop_basket');
     return peticion;
   }
 
-  //Categorias
-  obtenerCategoria(cat: string){
-    let peticion = this.http.get<Producto_modelo[]>(this.URL_API + '/categoria/' + cat);
+  //Categories
+  getCategory(category: string){
+    let peticion = this.http.get<Product_model[]>(this.URL_API + '/category/' + category);
     return peticion;
   }
 
-  //Enviar un producto al carrito
-  insertarCompra(datos: Producto_modelo) {
-    let peticion = this.http.post(this.URL_API + '/insertar_compra', datos);
+  //Insert product to shopping cart
+  insertPurchase(data: Purchase_model) {
+    let peticion = this.http.post(this.URL_API + '/insert_purchase', data);
     return peticion;
     }
   
-  //Eliminar Producto
-  eliminarProducto(id: string) {
-    let peticion = this.http.delete(this.URL_API + '/eliminar/' + id);
+  //Delete product
+  deleteProduct(id: string) {
+    let peticion = this.http.delete(this.URL_API + '/delete_product/' + id);
     return peticion;
     }
   
+  /*------------------ Loggin -----------------*/
 
+  getUsers(){
+    let peticion  = this.http.get<Users_model[]>(this.URL_API + '/users')
+    return peticion;
+  }
 
+  registerUser(data: Users_model){
+    let peticion = this.http.post<any>(this.URL_API + '/register', data);
+    return peticion
+  }
 
+  login(data: Users_model){
+    let peticion = this.http.post<any>(this.URL_API + '/login', data);
+    return peticion
+  }
 
+  getRole(email: string) {
+    let peticion = this.http.get<any>(this.URL_API + '/role/' + email);
+    return peticion;
+    }
 
+  // Get Token
+  getToken(){
+    return localStorage.getItem('token');
+  }
 
+  //User Logged in
+  userLogged(){
+    return !!localStorage.getItem("token")
+  }
 
- 
-
+  //Log out
+  logOut(){
+    localStorage.removeItem('token');
+    this.route.navigate(['/']);
+  }
 }

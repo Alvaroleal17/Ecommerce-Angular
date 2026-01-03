@@ -8,7 +8,7 @@
     <div class="row g-0">
       <div class="col-md-4">
         <img
-          src="../../../assets/img/{{ productServ.datosProd.url_img }}"
+          [src]="productServ.datosProd.url_img"
           class="img-fluid rounded-start"
           alt="hoodie"
         />
@@ -27,7 +27,7 @@
           <!-- Boton compar -->
           <form
             #miFormulario="ngForm"
-            (ngSubmit)="agregarProducto(miFormulario)"
+            (ngSubmit)="addProduct(miFormulario)"
           >
             <input
               type="hidden"

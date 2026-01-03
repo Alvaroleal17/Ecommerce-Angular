@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EcommerceServService } from 'src/app/services/ecommerce-serv.service';
-import { Compra_modelo } from 'src/app/models/compras';
+import { Purchase_model } from 'src/app/models/purchases';
 
 @Component({
   selector: 'app-shop',
@@ -11,17 +11,18 @@ export class ShopComponent implements OnInit {
   constructor(public productServ: EcommerceServService) {}
 
   ngOnInit(): void {
-    this.listadoProductos();
+    this.productList();
   }
 
   total_compra = 0;
 
-  listadoProductos() {
-    this.productServ.obtenerCompras().subscribe({
+  productList() {
+    this.productServ.getPurchases().subscribe({
       next: (res) => {
+        this.total_compra = 0;
+
         this.productServ.documents = res;
         for (let i = 0; i < res.length; i++) {
-          //Recorrer en un for el res. Y calcular cual es "total"  TOTAL.
           this.total_compra = this.total_compra + res[i].total;
         }
       },
@@ -29,13 +30,13 @@ export class ShopComponent implements OnInit {
     });
   }
 
-  eliminarProducto(id: any) {
-    let confirmacion = confirm('Desea eliminar el Video');
+  deleteProduct(id: any) {
+    let confirmacion = confirm('You want to delete the product');
     console.log(confirmacion);
     if (confirmacion == true) {
-      this.productServ.eliminarProducto(id).subscribe({
+      this.productServ.deleteProduct(id).subscribe({
         next: (res) => {
-          this.listadoProductos();
+          this.productList();
         },
         error: (err) => console.log(err),
       });
