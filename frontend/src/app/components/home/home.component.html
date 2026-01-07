@@ -5,7 +5,9 @@
     <div class="col-4 mb-5" *ngFor="let p of productServ.documentos">
       <div class="card card-move m-2 item">
         <img
-          [src]="p.url_img" class="card-img-top img-fluid" alt="Responsive image"
+          [src]="p.url_img"
+          class="card-img-top img-fluid"
+          alt="Responsive image"
         />
         <div class="card-body">
           <span class="badge bg-warning text-dark mb-3">{{ p.category }}</span>
@@ -23,9 +25,9 @@
 </div>
 
 <footer class="my-5 pt-5 text-muted text-center text-small">
-  <p class="mb-1">&copy; 2022 Ecommerce Alvaro Leal</p>
+  <p class="mb-1">&copy; Urban Trends E-Commerce Alvaro Leal</p>
   <ul class="list-inline">
-    <li class="list-inline-item text-secondary">privacy</li>
+    <li class="list-inline-item text-secondary">Privacy</li>
     <li class="list-inline-item text-secondary">Terms</li>
     <li class="list-inline-item text-secondary">Support</li>
   </ul>

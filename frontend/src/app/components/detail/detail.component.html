@@ -3,7 +3,7 @@
   <br />
   <br />
   <div class="card" style="max-width: 2000px">
-    <h1 class="card-text pt-4 ms-5">Purchase Detail</h1>
+    <h1 class="card-text pt-4 ms-5">Article details</h1>
     <hr class="my-4" />
     <div class="row g-0">
       <div class="col-md-4">
@@ -25,10 +25,7 @@
           </h3>
           <br />
           <!-- Boton compar -->
-          <form
-            #miFormulario="ngForm"
-            (ngSubmit)="addProduct(miFormulario)"
-          >
+          <form #miFormulario="ngForm" (ngSubmit)="addProduct(miFormulario)">
             <input
               type="hidden"
               id="id_producto"
